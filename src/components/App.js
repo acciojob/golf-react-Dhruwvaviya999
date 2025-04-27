@@ -1,42 +1,38 @@
-import React, { Component, useState } from "react";
-import '../styles/App.css';
+import { useState, useEffect } from 'react';
 
-class App extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            renderBall: false,
-            posi : 0,
-            ballPosition: { left: "0px" }
-        };
-        this.renderChoice = this.renderBallOrButton.bind(this)
-        this.buttonClickHandler = this.buttonClickHandler.bind(this)
+function App() {
+
+  const [ball, setBall] = useState(0);
+  const [show, setShow] = useState(false);
+
+  function handleStartGame(){
+    setShow(true);
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if(event.key === "ArrowLeft"){
+        setBall((prev) => prev - 5);
+      } else if(event.key === "ArrowRight"){
+        setBall((prev) => prev + 5);
+      };
     };
 
-    buttonClickHandler() {
-   
-   }
-    renderBallOrButton() {
-		if (this.state.renderBall) {
-		    return <div className="ball" style={this.state.ballPosition}></div>
-		} else {
-		    return <button onClick={this.buttonClickHandler} >Start</button>
-		}
-    }
+    window.addEventListener('keydown', handleKeyDown);
 
-    // bind ArrowRight keydown event
-    componentDidMount() {
-      
-    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
-    render() {
-        return (
-            <div className="playground">
-                {this.renderBallOrButton()}
-            </div>
-        )
-    }
+  return (
+    <>
+      <div style={{width: '1300px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <div style={{height: '100px', width: '100px', display: `${show ? "block" : "none"}`, background: 'white', borderRadius: '50%', margin: 'auto', position: 'relative', left: `${ball}px`}} id='ball'></div>
+        <button style={{display: `${show ? "none" : "block"}`}} onClick={handleStartGame}>Start</button>
+      </div>
+    </>
+  )
 }
 
-
-export default App;
+export default App
