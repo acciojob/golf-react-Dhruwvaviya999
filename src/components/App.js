@@ -1,38 +1,51 @@
-import { useState, useEffect } from 'react';
+import React, { Component, useState } from "react";
+import '../styles/App.css';
 
-function App() {
+class App extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            renderBall: false,
+            posi : 5,
+        };
+        this.renderChoice = this.renderBallOrButton.bind(this)
+        this.buttonClickHandler = this.buttonClickHandler.bind(this)
+	     this.onMove = this.onMove.bind(this);
+    };
 
-  const [ball, setBall] = useState(0);
-  const [show, setShow] = useState(false);
-
-  function handleStartGame(){
-    setShow(true);
+    buttonClickHandler() {
+	   this.setState({renderBall:true})
+   }
+    renderBallOrButton() {
+		if (this.state.renderBall) {
+		    return <div className="ball" style={{left:this.state.posi}}></div>
+		} else {
+		    return <button className="start" onClick={this.buttonClickHandler} >Start</button>
+		}
+    }
+onMove() {
+    this.setState({ posi:this.state.posi+5 });
   }
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if(event.key === "ArrowLeft"){
-        setBall((prev) => prev - 5);
-      } else if(event.key === "ArrowRight"){
-        setBall((prev) => prev + 5);
-      };
-    };
+    // bind ArrowRight keydown event
+    componentDidMount() {
+	    const onMove = this.onMove
+       window.addEventListener("keydown", function (e) {
+      const key = e.key;
+      if (key === "ArrowRight") {
+        onMove();
+      }
+    });
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  return (
-    <>
-      <div style={{width: '1300px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <div style={{height: '100px', width: '100px', display: `${show ? "block" : "none"}`, background: 'white', borderRadius: '50%', margin: 'auto', position: 'relative', left: `${ball}px`}} id='ball'></div>
-        <button style={{display: `${show ? "none" : "block"}`}} onClick={handleStartGame}>Start</button>
-      </div>
-    </>
-  )
+    render() {
+        return (
+            <div className="playground">
+                {this.renderBallOrButton()}
+            </div>
+        )
+    }
 }
 
-export default App
+
+export default App;
